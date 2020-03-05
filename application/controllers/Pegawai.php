@@ -13,45 +13,58 @@ class Pegawai extends RestController{
         $this->load->library('form_validation');
     }
     public function index_get($id_pegawai = null){
-        if($id_pegawai == null){
-            return $this->returnData($this->db->get('PEGAWAI')->result(),false);
+        $pegawai = $this->PegawaiModel->getall($id_pegawai);
+        if($pegawai == null){
+            $this->response(['Message'=>'Data Tidak Ditemukan','Error'=>true],404);
         }else{
-            if($this->db->get_where('PEGAWAI', [ 'ID_PEGAWAI' => $id_pegawai] )->result() == NULL){
-                return $this->returnData('gagal', 502);
+            if($id_pegawai==null){
+                $this->response(['Data'=>$pegawai,'Error'=>false],200);
             }
             else{
-                return $this->returnData($this->db->get_where('PEGAWAI', [ 'ID_PEGAWAI' => $id_pegawai] )->result(), 200);
+                $this->response(['Data'=>$pegawai,'Error'=>false],200);
             }
         }
     }
     public function index_post($id_pegawai = null){
-        $pegawai = new dataPegawai();
-        $pegawai->id_pegawai = $this->post('id_pegawai');
-        $pegawai->nama_pegawai = $this->post('nama_pegawai');
-        $pegawai->tgl_lahir_pegawai = $this->post('tgl_lahir_pegawai');
-        $pegawai->phone_pegawai = $this->post('phone_pegawai');
-        $pegawai->alamat_pegawai = $this->post('alamat_pegawai');
-        $pegawai->jabatan = $this->post('jabatan');
-        $pegawai->password = $this->post('password');
-        if($id_pegawai == null){
-            $response = $this->PegawaiModel->store($pegawai);
+        $validation = $this->form_validation;
+        $rule = $this->PegawaiModel->rules();
+        $validation->set_rules($rule);
+        if (!$validation->run()) {
+			return $this->returnData($this->form_validation->error_array(), true,400);
         }else{
-            $response = $this->PegawaiModel->update($pegawai,$id_pegawai);
+            $pegawai = new dataPegawai();
+            $pegawai->id_pegawai = $this->post('id_pegawai');
+            $pegawai->nama_pegawai = $this->post('nama_pegawai');
+            $pegawai->tgl_lahir_pegawai = $this->post('tgl_lahir_pegawai');
+            $pegawai->phone_pegawai = $this->post('phone_pegawai');
+            $pegawai->alamat_pegawai = $this->post('alamat_pegawai');
+            $pegawai->jabatan = $this->post('jabatan');
+            $pegawai->password = $this->post('password');
+            $response = $this->PegawaiModel->store($pegawai);
+            $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
         }
+    }
+    public function index_put($id_pegawai){
+        $pegawai = new dataPegawai();
+        $pegawai->nama_pegawai = $this->put('nama_pegawai');
+        $pegawai->tgl_lahir_pegawai = $this->put('tgl_lahir_pegawai');
+        $pegawai->phone_pegawai = $this->put('phone_pegawai');
+        $pegawai->alamat_pegawai = $this->put('alamat_pegawai');
+        $pegawai->jabatan = $this->put('jabatan');
+        $response = $this->PegawaiModel->update($pegawai,$id_pegawai);
+        $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
+    }
 
+    public function index_delete($id_pegawai){
+        date_default_timezone_set('Asia/Jakarta');
+        $now = date('Y-m-d H:i:s');
+        $response = $this->PegawaiModel->delete($now,$id_pegawai);
+        $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
     }
-    public function index_delete($id_pegawai = null){
-        if($id_pegawai == null){
-			return $this->returnData('Parameter Id Tidak Ditemukan', true);
-        }
-        $response = $this->PegawaiModel->destroy($id_pegawai);
-        return $this->returnData($response['message'], $response['error']);
-    }
-    public function returnData($msg,$error){
+    public function returnData($msg,$error,$sts){
         $response['message']=$msg;
         $response['error']=$error;
-        $response['status']=200;
-        return $this->response($response,200);
+        return $this->response($response,$sts);
 	}
 }
 class dataPegawai{

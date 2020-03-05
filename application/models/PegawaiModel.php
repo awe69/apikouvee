@@ -13,9 +13,9 @@ class PegawaiModel extends CI_Model{
     public $password;
     public $rule =[
         [
-            'field' => 'nama',
-            'label' => 'nama',
-            'rules' => 'required|is_unique[pegawai.nama_pegawai|alpha'
+            'field' => 'nama_pegawai',
+            'label' => 'nama_pegawai',
+            'rules' => 'required|is_unique[pegawai.nama_pegawai]|alpha'
         ],
         [
             'field' => 'tgl_lahir_pegawai',
@@ -44,11 +44,14 @@ class PegawaiModel extends CI_Model{
         ],
     ];
     public function Rules(){return $this->rule;}
-    public function getall(){
-        return $this->db->get('pegawai')->result();
+    public function getall($id){
+        if($id==null){
+            return $this->db->get('pegawai')->result();
+        }else{
+            return $this->db->get_where('pegawai', [ 'id_pegawai' => $id] )->result();
+        }
     }
     public function store($request) { 
-		$this->id_pegawai = $request->id_pegawai;
 		$this->nama_pegawai = $request->nama_pegawai; 
 		$this->tgl_lahir_pegawai = $request->tgl_lahir_pegawai;
 		$this->phone_pegawai = $request->phone_pegawai;
@@ -61,18 +64,21 @@ class PegawaiModel extends CI_Model{
         return ['msg'=>'Gagal','error'=>true];
     }
     public function update($request,$id) { 
-        $updateData = ['nama_pegawai' => $request->nama_pegawai, 'tgl_lahir_pegawai' =>$request->tgl_lahir_pegawai,
-    'phone_pegawai'=>$request->phone_pegawai,'alamat_pegawai'=>$request->alamat_pegawai,'jabatan'=>$request->jabatan];
+        $updateData = ['nama_pegawai' => $request->nama_pegawai, 
+        'tgl_lahir_pegawai' =>$request->tgl_lahir_pegawai,
+        'phone_pegawai'=>$request->phone_pegawai,
+        'alamat_pegawai'=>$request->alamat_pegawai,'
+        jabatan'=>$request->jabatan];
         if($this->db->where('id_pegawai',$id)->update($this->table, $updateData)){
             return ['msg'=>'Berhasil','error'=>false];
-        }
-        return ['msg'=>'Gagal','error'=>true];
+        }return ['msg'=>'Gagal','error'=>true];
     }
-    public function destroy($id){
-        if (empty($this->db->select('*')->where(array('id_pegawai' => $id))->get($this->table)->row())) return ['msg'=>'Id tidak ditemukan','error'=>true];
-        
-        if($this->db->delete($this->table, array('id_pegawai' => $id))){
-            return ['msg'=>'Berhasil','error'=>false];
+    public function delete($time,$id){
+        $delet=[
+            'delete_at_pegawai'=>$time
+        ];
+        if($this->db->where('id_pegawai',$id)->update($this->table, $delet)){
+            return ['msg'=>'Data Berhasil Di Delete','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
     }
