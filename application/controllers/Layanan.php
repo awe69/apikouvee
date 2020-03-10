@@ -34,8 +34,10 @@ class Layanan extends RestController{
 			return $this->returnData($this->form_validation->error_array(), true,400);
         }else{
             $Layanan = new dataLayanan();
+            $Layanan->id_ukuran = $this->post('id_ukuran');
             $Layanan->id_pegawai = $this->post('id_pegawai');
-            $Layanan->layanan = $this->post('layanan');
+            $Layanan->nama_layanan = $this->post('nama_layanan');
+            $Layanan->harga_layanan = $this->post('harga_layanan');
             $response = $this->LayananModel->store($Layanan);
             $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
         }
@@ -43,8 +45,10 @@ class Layanan extends RestController{
     public function index_put($id_layanan){
         // $id_layanan = $this->put('id_layanan');
         $Layanan = new dataLayanan();
+        $Layanan->id_ukuran = $this->put('id_ukuran');
         $Layanan->id_pegawai = $this->put('id_pegawai');
-        $Layanan->layanan = $this->put('layanan');
+        $Layanan->nama_layanan = $this->put('nama_layanan');
+        $Layanan->harga_layanan = $this->put('harga_layanan');
         $response = $this->LayananModel->update($Layanan,$id_layanan);
         $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
     }

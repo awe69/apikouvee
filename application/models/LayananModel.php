@@ -22,11 +22,6 @@ class LayananModel extends CI_Model{
             'rules'=>'required'
         ],
         [
-            'field'=>'id_pegawai',
-            'label'=>'id_pegawai',
-            'rules'=>'required'
-        ],
-        [
             'field'=>'nama_layanan',
             'label'=>'nama_layanan',
             'rules'=>'required|is_unique[layanan.nama_layanan]|alpha'
@@ -40,24 +35,27 @@ class LayananModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            $this->db->select('CONCAT(layanan.nama_layanan,'.',)');
-            return $this->db->get($this->table)->result();
+            return $this->db->get_where($this->table, [ 'delete_at_layanan' => '0000-00-00 00:00:00'] )->result();
         }else{
             return $this->db->get_where($this->table, [ 'id_layanan' => $id] )->result();
         }
     }
     public function store($request) { 
         $this->id_pegawai = $request->id_pegawai;
-        $this->layanan = $request->layanan;
+        $this->id_ukuran = $request->id_ukuran;
+        $this->nama_layanan = $request->nama_layanan;
+        $this->harga_layanan = $request->harga_layanan;
         if($this->db->insert($this->table, $this)){
-            return ['msg'=>'Berhasil','error'=>false];
+            return ['msg'=>'Berhasil Menbahkan Data','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
     }
     public function update($request,$id) { 
         $updateData = [
-        'layanan' => $request->layanan,
-        'id_pegawai'=>$request->id_pegawai];
+        'id_ukuran'=>$request->id_ukuran,
+        'id_pegawai'=>$request->id_pegawai,
+        'nama_layanan' => $request->nama_layanan,
+        'harga_layanan'=>$request->harga_layanan];
         if($this->db->where('id_layanan',$id)->update($this->table, $updateData)){
             return ['msg'=>'Data Berhasil Di Ubah','error'=>false];
         }
