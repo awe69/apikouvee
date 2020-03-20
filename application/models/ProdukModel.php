@@ -54,13 +54,22 @@ class ProdukModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            return $this->db->get_where($this->table, [ 'delete_at_produk' => '0000-00-00 00:00:00'] )->result();
+            $this->db->select('PRODUK.ID_PRODUK,PRODUK.NAMA_PRODUK,PRODUK.STOCK,PRODUK.MIN_STOCK,PRODUK.SATUAN_PRODUK,
+            PRODUK.HARGA_BELI,PRODUK.HARGA_JUAL,PRODUK.GAMBAR,PEGAWAI.NAMA_PEGAWAI,PRODUK.CREATE_AT_PRODUK,PRODUK.UPDATE_AT_PRODUK,PRODUK.DELETE_AT_PRODUK')
+                    ->from('PRODUK')
+                    ->join('PEGAWAI','PRODUK.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI');
+            return $this->db->get()->result();
         }else{
-            return $this->db->get_where($this->table, [ 'id_produk' => $id] )->result();
+            $this->db->select('PRODUK.ID_PRODUK,PRODUK.NAMA_PRODUK,PRODUK.STOCK,PRODUK.MIN_STOCK,PRODUK.SATUAN_PRODUK,
+            PRODUK.HARGA_BELI,PRODUK.HARGA_JUAL,PRODUK.GAMBAR,PEGAWAI.NAMA_PEGAWAI,PRODUK.CREATE_AT_PRODUK,PRODUK.UPDATE_AT_PRODUK,PRODUK.DELETE_AT_PRODUK')
+                    ->from('PRODUK')
+                    ->join('PEGAWAI','PRODUK.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI')
+                    ->like('ID_PRODUK',$id);
+            return $this->db->get()->result();
         }
     }
     public function store($request) { 
-        $this->id_pegawai = $request->id_pegawai;
+        $this->id_pegawai = 1;
         $this->nama_produk = $request->nama_produk;
         $this->stock = $request->stock;
         $this->min_stock = $request->min_stock;

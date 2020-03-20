@@ -40,7 +40,7 @@ class PegawaiModel extends CI_Model{
         [
             'field' => 'password',
             'label' => 'password',
-            'rules' => 'required'
+            'rules' => 'required|min_length[8]'
         ],
     ];
     public function Rules(){return $this->rule;}
@@ -57,7 +57,7 @@ class PegawaiModel extends CI_Model{
 		$this->phone_pegawai = $request->phone_pegawai;
         $this->alamat_pegawai = $request->alamat_pegawai;
         $this->jabatan = $request->jabatan;
-        $this->password = password_hash($request->password, PASSWORD_BCRYPT); 
+        $this->password = $request->password;
         if($this->db->insert($this->table, $this)){
             return ['msg'=>'Berhasil','error'=>false];
         }

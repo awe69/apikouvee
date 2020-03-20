@@ -5,8 +5,8 @@ use chriskacerguis\RestServer\RestController;
 
 class Produk extends RestController{
     public function __construct(){
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: GET, OPTIONS, POST, DELETE");
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, DELETE, OPTIONS, POST, PUT");
         header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
         parent::__construct();
         $this->load->model('ProdukModel');
@@ -53,7 +53,7 @@ class Produk extends RestController{
         }
     }
     
-    public function index_delete($id_produk){
+    public function index_option($id_produk){
         // $id_produk = $this->put('id_produk');
         date_default_timezone_set('Asia/Jakarta');
         $now = date('Y-m-d H:i:s');

@@ -34,9 +34,16 @@ class SupplierModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            return $this->db->get_where($this->table, [ 'delete_at_supplier' => '0000-00-00 00:00:00'] )->result();
+            $this->db->select('SUPPLIER.ID_SUPPLIER,SUPPLIER.NAMA_SUPPLIER,SUPPLIER.ALAMAT_SUPPLIER,SUPPLIER.PHONE_SUPPLIER,PEGAWAI.NAMA_PEGAWAI,SUPPLIER.CREATE_AT_SUPPLIER,SUPPLIER.UPDATE_AT_SUPPLIER,SUPPLIER.DELETE_AT_SUPPLIER')
+                    ->from('SUPPLIER')
+                    ->join('PEGAWAI','SUPPLIER.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI');
+            return $this->db->get()->result();
         }else{
-            return $this->db->get_where('supplier', [ 'id_supplier' => $id] )->result();
+            $this->db->select('SUPPLIER.ID_SUPPLIER,SUPPLIER.NAMA_SUPPLIER,SUPPLIER.ALAMAT_SUPPLIER,SUPPLIER.PHONE_SUPPLIER,PEGAWAI.NAMA_PEGAWAI,SUPPLIER.CREATE_AT_SUPPLIER,SUPPLIER.UPDATE_AT_SUPPLIER,SUPPLIER.DELETE_AT_SUPPLIER')
+                    ->from('SUPPLIER')
+                    ->join('PEGAWAI','SUPPLIER.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI')
+                    ->like('ID_SUPPLIER',$id);
+            return $this->db->get()->result();
         }
     }
     public function store($request) { 

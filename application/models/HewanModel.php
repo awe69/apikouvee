@@ -41,9 +41,22 @@ class HewanModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            return $this->db->get($this->table)->result();
+            $this->db->select('HEWAN.ID_HEWAN,JENIS_HEWAN.JENISHEWAN,HEWAN.NAMA_HEWAN,
+            HEWAN.TGL_LAHIR_HEWAN,PELANGGAN.NAMA_PELANGGAN,PEGAWAI.NAMA_PEGAWAI,HEWAN.CREATE_AT_HEWAN,HEWAN.UPDATE_AT_HEWAN,HEWAN.DELETE_AT_HEWAN')
+                    ->from('HEWAN')
+                    ->join('PELANGGAN','HEWAN.ID_PELANGGAN = PELANGGAN.ID_PELANGGAN')
+                    ->join('JENIS_HEWAN','HEWAN.ID_JENISHEWAN = JENIS_HEWAN.ID_JENISHEWAN')
+                    ->join('PEGAWAI','HEWAN.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI');
+            return $this->db->get()->result();
         }else{
-            return $this->db->get_where($this->table, [ 'id_hewan' => $id] )->result();
+            $this->db->select('HEWAN.ID_HEWAN,JENIS_HEWAN.JENISHEWAN,HEWAN.NAMA_HEWAN,
+            HEWAN.TGL_LAHIR_HEWAN,PELANGGAN.NAMA_PELANGGAN,PEGAWAI.NAMA_PEGAWAI,HEWAN.CREATE_AT_HEWAN,HEWAN.UPDATE_AT_HEWAN,HEWAN.DELETE_AT_HEWAN')
+                    ->from('HEWAN')
+                    ->join('PELANGGAN','HEWAN.ID_PELANGGAN = PELANGGAN.ID_PELANGGAN')
+                    ->join('JENIS_HEWAN','HEWAN.ID_JENISHEWAN = JENIS_HEWAN.ID_JENISHEWAN')
+                    ->join('PEGAWAI','HEWAN.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI')
+                    ->like('id_hewan',$id);
+            return $this->db->get()->result();
         }
     }
     public function store($request) { 

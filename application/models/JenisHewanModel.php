@@ -23,9 +23,16 @@ class JenisHewanModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            return $this->db->get_where($this->table, [ 'delete_at_jhewan' => '0000-00-00 00:00:00'] )->result();
+            $this->db->select('jenis_hewan.ID_JENISHEWAN,jenis_hewan.JENISHEWAN,PEGAWAI.NAMA_PEGAWAI,jenis_hewan.CREATE_AT_JHEWAN,jenis_hewan.UPDATE_AT_JHEWAN,jenis_hewan.DELETE_AT_JHEWAN')
+                    ->from('jenis_hewan')
+                    ->join('pegawai','jenis_hewan.id_pegawai = pegawai.id_pegawai');
+            return $this->db->get()->result();
         }else{
-            return $this->db->get_where($this->table, [ 'id_jenishewan' => $id] )->result();
+            $this->db->select('jenis_hewan.ID_JENISHEWAN,jenis_hewan.JENISHEWAN,PEGAWAI.NAMA_PEGAWAI,jenis_hewan.CREATE_AT_JHEWAN,jenis_hewan.UPDATE_AT_JHEWAN,jenis_hewan.DELETE_AT_JHEWAN')
+                    ->from('jenis_hewan')
+                    ->join('pegawai','jenis_hewan.id_pegawai = pegawai.id_pegawai')
+                    ->like('id_jenishewan',$id);
+            return $this->db->get()->result();
         }
     }
     public function store($request) { 

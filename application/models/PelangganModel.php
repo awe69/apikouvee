@@ -40,9 +40,18 @@ class PelangganModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            return $this->db->get_where($this->table, [ 'delete_at_pelanggan' => '0000-00-00 00:00:00'] )->result();
+            $this->db->select('PELANGGAN.ID_PELANGGAN,PELANGGAN.NAMA_PELANGGAN,PELANGGAN.PHONE_PELANGGAN,
+            PELANGGAN.ALAMAT_PELANGGAN,PELANGGAN.TGL_LAHIR_PELANGGAN,PEGAWAI.NAMA_PEGAWAI,PELANGGAN.CREATE_AT_PELANGGAN,PELANGGAN.UPDATE_AT_PELANGGAN,PELANGGAN.DELETE_AT_PELANGGAN')
+                    ->from('PELANGGAN')
+                    ->join('PEGAWAI','PELANGGAN.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI');
+            return $this->db->get()->result();
         }else{
-            return $this->db->get_where('pelanggan', [ 'id_pelanggan' => $id] )->result();
+            $this->db->select('PELANGGAN.ID_PELANGGAN,PELANGGAN.NAMA_PELANGGAN,PELANGGAN.PHONE_PELANGGAN,
+            PELANGGAN.ALAMAT_PELANGGAN,PELANGGAN.TGL_LAHIR_PELANGGAN,PEGAWAI.NAMA_PEGAWAI,PELANGGAN.CREATE_AT_PELANGGAN,PELANGGAN.UPDATE_AT_PELANGGAN,PELANGGAN.DELETE_AT_PELANGGAN')
+                    ->from('PELANGGAN')
+                    ->join('PEGAWAI','PELANGGAN.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI')
+                    ->like('ID_PELANGGAN',$id);
+            return $this->db->get()->result();
         }
     }
     public function store($request) { 
