@@ -6,7 +6,7 @@ use chriskacerguis\RestServer\RestController;
 class Layanan extends RestController{
     public function __construct(){
         header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: GET, OPTIONS, POST, DELETE");
+        header('Access-Control-Allow-Methods: GET, OPTIONS, POST, DELETE, PUT');
         header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
         parent::__construct();
         $this->load->model('LayananModel');
