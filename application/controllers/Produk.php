@@ -30,8 +30,23 @@ class Produk extends RestController{
         $validation = $this->form_validation;
         $rule = $this->ProdukModel->Rules();
         $validation->set_rules($rule);
-        if (!$validation->run()) {
-			return $this->returnData($this->form_validation->error_array(), true,400);
+        if($id_produk==null){
+            if (!$validation->run()) {
+                return $this->returnData($this->form_validation->error_array(), true,400);
+            }
+            else{
+                $Produk = new dataProduk();
+                $Produk->id_pegawai = $this->post('id_pegawai');
+                $Produk->nama_produk = $this->post('nama_produk');
+                $Produk->stock = $this->post('stock');
+                $Produk->min_stock = $this->post('min_stock');
+                $Produk->satuan_produk = $this->post('satuan_produk');
+                $Produk->harga_beli = $this->post('harga_beli');
+                $Produk->harga_jual = $this->post('harga_jual');
+                $Produk->gambar = $this->_uploadImage();
+                $response = $this->ProdukModel->store($Produk);
+                $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
+            }
         }else{
             $Produk = new dataProduk();
             $Produk->id_pegawai = $this->post('id_pegawai');
@@ -41,19 +56,12 @@ class Produk extends RestController{
             $Produk->satuan_produk = $this->post('satuan_produk');
             $Produk->harga_beli = $this->post('harga_beli');
             $Produk->harga_jual = $this->post('harga_jual');
-            if($id_produk==null){
-                $Produk->gambar = $this->_uploadImage();
-                $response = $this->ProdukModel->store($Produk);
-                $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
-            }
-            else{
-                $response = $this->ProdukModel->update($Produk,$id_produk);
-                $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
-            }
+            $response = $this->ProdukModel->update($Produk,$id_produk);
+            $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
         }
     }
     
-    public function index_option($id_produk){
+    public function index_delete($id_produk){
         // $id_produk = $this->put('id_produk');
         date_default_timezone_set('Asia/Jakarta');
         $now = date('Y-m-d H:i:s');

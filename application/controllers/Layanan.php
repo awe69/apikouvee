@@ -35,6 +35,7 @@ class Layanan extends RestController{
         }else{
             $Layanan = new dataLayanan();
             $Layanan->id_ukuran = $this->post('id_ukuran');
+            $Layanan->id_jenishewan = $this->post('id_jenishewan');
             $Layanan->id_pegawai = $this->post('id_pegawai');
             $Layanan->nama_layanan = $this->post('nama_layanan');
             $Layanan->harga_layanan = $this->post('harga_layanan');
@@ -46,6 +47,7 @@ class Layanan extends RestController{
         // $id_layanan = $this->put('id_layanan');
         $Layanan = new dataLayanan();
         $Layanan->id_ukuran = $this->put('id_ukuran');
+        $Layanan->id_jenishewan = $this->put('id_jenishewan');
         $Layanan->id_pegawai = $this->put('id_pegawai');
         $Layanan->nama_layanan = $this->put('nama_layanan');
         $Layanan->harga_layanan = $this->put('harga_layanan');
@@ -70,6 +72,7 @@ class Layanan extends RestController{
 class dataLayanan{
     public $id_layanan;
     public $id_ukuran;
+    public $id_jenishewan;
     public $id_pegawai;
     public $nama_layanan;
     public $harga_layanan;

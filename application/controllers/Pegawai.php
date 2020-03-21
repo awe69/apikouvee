@@ -62,8 +62,8 @@ class Pegawai extends RestController{
         $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
     }
     public function returnData($msg,$error,$sts){
-        $response['message']=$msg;
-        $response['error']=$error;
+        $response['Message']=$msg;
+        $response['Error']=$error;
         return $this->response($response,$sts);
 	}
 }

@@ -6,6 +6,7 @@ class LayananModel extends CI_Model{
 
     public $id_layanan;
     public $id_ukuran;
+    public $id_jenishewan;
     public $id_pegawai;
     public $nama_layanan;
     public $harga_layanan;
@@ -24,7 +25,7 @@ class LayananModel extends CI_Model{
         [
             'field'=>'nama_layanan',
             'label'=>'nama_layanan',
-            'rules'=>'required|is_unique[layanan.nama_layanan]|alpha'
+            'rules'=>'required|alpha'
         ],
         [
             'field'=>'harga_layanan',
@@ -35,7 +36,7 @@ class LayananModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            $this->db->select('LAYANAN.ID_LAYANAN,UKURAN.UKURAN,JENIS_HEWAN.JENISHEWAN,LAYANAN.NAMA_LAYANAN,LAYANAN.HARGA_LAYANAN,PEGAWAI.NAMA_PEGAWAI,LAYANAN.CREATE_AT_LAYANAN,LAYANAN.UPDATE_AT_LAYANAN,LAYANAN.DELETE_AT_LAYANAN')
+            $this->db->select('LAYANAN.ID_LAYANAN,UKURAN.UKURAN,JENIS_HEWAN.JENISHEWAN,LAYANAN.NAMA_LAYANAN,LAYANAN.HARGA_LAYANAN,PEGAWAI.NAMA_PEGAWAI,LAYANAN.CREATE_AT_LAYANAN,LAYANAN.UPDATE_AT_LAYANAN,LAYANAN.DELETE_AT_LAYANAN,LAYANAN.ID_JENISHEWAN,LAYANAN.ID_UKURAN')
                     ->from('LAYANAN')
                     ->join('UKURAN','LAYANAN.ID_UKURAN = UKURAN.ID_UKURAN')
                     ->join('JENIS_HEWAN','LAYANAN.ID_JENISHEWAN = JENIS_HEWAN.ID_JENISHEWAN')
@@ -53,6 +54,7 @@ class LayananModel extends CI_Model{
     }
     public function store($request) { 
         $this->id_pegawai = $request->id_pegawai;
+        $this->id_jenishewan = $request->id_jenishewan;
         $this->id_ukuran = $request->id_ukuran;
         $this->nama_layanan = $request->nama_layanan;
         $this->harga_layanan = $request->harga_layanan;
@@ -64,6 +66,7 @@ class LayananModel extends CI_Model{
     public function update($request,$id) { 
         $updateData = [
         'id_ukuran'=>$request->id_ukuran,
+        'id_jenishewan'=>$request->id_jenishewan,
         'id_pegawai'=>$request->id_pegawai,
         'nama_layanan' => $request->nama_layanan,
         'harga_layanan'=>$request->harga_layanan];
