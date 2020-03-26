@@ -25,7 +25,7 @@ class PegawaiModel extends CI_Model{
         [
             'field' => 'phone_pegawai',
             'label' => 'phone_pegawai',
-            'rules' => 'required|numeric|exact_length[12]'
+            'rules' => 'required|numeric|max_length[12]'
         ],
         [
             'field' => 'alamat_pegawai',
