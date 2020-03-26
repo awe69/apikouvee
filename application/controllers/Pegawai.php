@@ -33,7 +33,6 @@ class Pegawai extends RestController{
 			return $this->returnData($this->form_validation->error_array(), true,400);
         }else{
             $pegawai = new dataPegawai();
-            $pegawai->id_pegawai = $this->post('id_pegawai');
             $pegawai->nama_pegawai = $this->post('nama_pegawai');
             $pegawai->tgl_lahir_pegawai = $this->post('tgl_lahir_pegawai');
             $pegawai->phone_pegawai = $this->post('phone_pegawai');
