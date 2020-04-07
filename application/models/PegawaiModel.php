@@ -83,5 +83,22 @@ class PegawaiModel extends CI_Model{
         return ['msg'=>'Gagal','error'=>true];
     }
 
+    public function verify($request)
+    {
+        // $this->db->select('ID_PEGAWAI,JABATAN')
+        //     ->where('NAMA_PEGAWAI',$id);
+        $user = $this->db->select('ID_PEGAWAI,JABATAN,PASSWORD')->get_where('pegawai', [ 'nama_pegawai' => $request->username] )->row_array();
+        if (!empty($user)) {
+            if(strcmp($request->password,$user['PASSWORD']) == 0){
+                return $user;
+            }
+            else{
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
 }
 ?>
