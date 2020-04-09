@@ -56,10 +56,10 @@ class Produk extends RestController{
             $Produk->satuan_produk = $this->post('satuan_produk');
             $Produk->harga_beli = $this->post('harga_beli');
             $Produk->harga_jual = $this->post('harga_jual');
-            if (!empty($_FILES["gambar"]["nama_produk"])) {
-                $this->image = $this->_uploadImage();
+            if (!empty($_FILES['gambar']['name'])) {
+                $Produk->gambar = $this->_uploadImage();
             } else {
-                $this->image = $post["gambar"];
+                $Produk->gambar = $this->post('gambar');
             }
             $response = $this->ProdukModel->update($Produk,$id_produk);
             $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
