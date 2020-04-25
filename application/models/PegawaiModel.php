@@ -40,7 +40,7 @@ class PegawaiModel extends CI_Model{
         [
             'field' => 'password',
             'label' => 'password',
-            'rules' => 'required|min_length[8]'
+            'rules' => 'required|max_length[8]'
         ],
     ];
     public function Rules(){return $this->rule;}

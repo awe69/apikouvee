@@ -38,7 +38,7 @@ class ProdukModel extends CI_Model{
         [
             'field'=>'satuan_produk',
             'label'=>'satuan_produk',
-            'rules'=>'required|alpha'
+            'rules'=>'required'
         ],
         [
             'field'=>'harga_beli',

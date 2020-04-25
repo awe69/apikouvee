@@ -13,13 +13,6 @@ class Auth extends RestController{
         $this->load->library('form_validation');
     }
     public function index_post(){
-        // $validation = $this->form_validation;
-        // $rule = $this->Rules();
-        // $validation->set_rules($rule);
-        // if (!$validation->run()) {
-        //     return $this->response($this->form_validation->error_array());
-        // }
-
         $user = new UserData();
         $user->password = $this->post('password');
         $user->username = $this->post('username');

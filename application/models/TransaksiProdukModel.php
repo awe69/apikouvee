@@ -2,18 +2,18 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class TransaksiProdukModel extends CI_Model{
-    private $table='transaksi_produk';
-    private $table2='detil_transaksi_produk';
+    private $table='TRANSAKSI_PRODUK';
+    private $table2='DETIL_TRANSAKSI_PRODUK';
     
     //id_transaksi_produk,id_pegawai= cs, peg_id_pegawai=kasir, id_hewan,status_transaksi_produk,tgl_transaksi_produk,subtotal_transaksi_produk
     //,total_transaksi_produk,diskon_produk
-
+    public $indeks;
     public $id_transaksi_produk;
     public $id_pegawai;
-    public $id_kasir;
+    public $peg_id_pegawai;
     public $id_hewan;
     public $status_transaksi_produk;
-    public $tgl_transaksi_produk;
+    public $tgl_transaksi;
     public $subtotal_transaksi_produk;
     public $total_transaksi_produk;
     public $diskon_produk;
@@ -25,78 +25,101 @@ class TransaksiProdukModel extends CI_Model{
             'rules'=>'required'
         ],
         [
-            'field'=>'nama_produk',
-            'label'=>'nama_produk',
-            'rules'=>'required|is_unique[produk.nama_produk]|alpha'
-        ],
-        [
-            'field'=>'stock',
-            'label'=>'stock',
+            'field'=>'id_hewan',
+            'label'=>'id_hewan',
             'rules'=>'required|numeric'
         ],
         [
-            'field'=>'min_stock',
-            'label'=>'min_stock',
-            'rules'=>'required|numeric'
-        ],
-        [
-            'field'=>'satuan_produk',
-            'label'=>'satuan_produk',
-            'rules'=>'required|alpha'
-        ],
-        [
-            'field'=>'harga_beli',
-            'label'=>'harga_beli',
-            'rules'=>'required|numeric'
-        ],
-        [
-            'field'=>'harga_jual',
-            'label'=>'harga_jual',
+            'field'=>'peg_id_pegawai',
+            'label'=>'peg_id_pegawai',
             'rules'=>'required|numeric'
         ],
     ];
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            return $this->db->get_where($this->table, [ 'delete_at_produk' => '0000-00-00 00:00:00'] )->result();
+            $this->db->select('*')
+                    ->from($this->table);
+            return $this->db->get()->result();
         }else{
-            return $this->db->get_where($this->table, [ 'id_produk' => $id] )->result();
+            $this->db->select('*')
+                    ->from($this->table)
+                    ->like('id_transaksi',$id);
+            return $this->db->get()->result();
         }
     }
     public function store($request) { 
+        date_default_timezone_set('Asia/Jakarta');
+        $now = date('dmy');
+        // echo $now;
+        $conn = mysqli_connect('localhost', $this->db->username, $this->db->password,$this->db->database);
+        
+        $result = mysqli_query($conn,"SELECT COUNT(DISTINCT id_transaksi_produk) as cnt FROM $this->table WHERE id_transaksi_produk LIKE '%$now%' ");
+        $num_rows = mysqli_fetch_row($result);
+        // echo $num_rows[0];
+        
+        $result = mysqli_query($conn,"SELECT MAX(indeks) FROM $this->table");
+        $MaxID = mysqli_fetch_row($result);
+        // echo $MaxID[0];
+        
+        if($num_rows[0] == 0){
+            $this->id_transaksi_produk = 'PR-'.$now.'-01';
+        }
+        else if($num_rows[0] > 0){
+            
+            $result = mysqli_query($conn,"SELECT id_transaksi_produk FROM $this->table WHERE indeks = $MaxID[0]");
+            $idTrans = mysqli_fetch_row($result);
+            //echo ' ',$idTrans[0];
+            
+            $str = substr($idTrans[0],10,2);
+            $no = intval($str) + 1;
+            
+            if($no < 10)
+            {
+                $this->id_transaksi_produk = 'PR-'.$now.'-0'.$no;
+                
+            }else if($no>=10)
+            {
+                $this->id_transaksi_produk = 'PR-'.$now.'-'.$no;
+               
+            }
+        }
+        $this->indeks = $MaxID[0] + 1;
         $this->id_pegawai = $request->id_pegawai;
-        $this->nama_produk = $request->nama_produk;
-        $this->stock = $request->stock;
-        $this->min_stock = $request->min_stock;
-        $this->satuan_produk = $request->satuan_produk;
-        $this->harga_beli = $request->harga_beli;
-        $this->harga_jual = $request->harga_jual;
-        $this->gambar = $request->gambar;
+        $this->peg_id_pegawai = $request->peg_id_pegawai;
+        $this->id_hewan = $request->id_hewan;
+        $this->status_transaksi_produk = 0;
+        $now = date('Y-m-d H:i:s');
+        $this->tgl_transaksi = $now;
+        $this->subtotal_transaksi_produk = 0;
+        $this->total_transaksi_produk = $this->subtotal_transaksi_produk - $this->diskon_produk;
+        $this->diskon_produk = 0;
         if($this->db->insert($this->table, $this)){
-            return ['msg'=>'Berhasil Menbahkan Data','error'=>false];
+            
+            return ['data'=>$this->id_transaksi_produk,'msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
     }
-    public function update($request,$id) { 
+    
+    public function update($request,$id) {
+        $conn = mysqli_connect('localhost', $this->db->username, $this->db->password,$this->db->database);
+        $result = mysqli_query($conn,"SELECT subtotal_transaksi_produk FROM $this->table WHERE id_transaksi_produk = $id");
+        $sub = mysqli_fetch_row($result);
+        
         $updateData = [
         'id_pegawai'=>$request->id_pegawai,
-        'nama_produk' => $request->nama_produk,
-        'stock' => $request->stock,
-        'min_stock' => $request->min_stock,
-        'satuan_produk' => $request->satuan_produk,
-        'harga_beli' => $request->harga_beli,
-        'harga_jual' => $request->harga_jual,
-        'gambar'=>$request->gambar];
-        if($this->db->where('id_produk',$id)->update($this->table, $updateData)){
+        'peg_id_pegawai' => $request->peg_id_pegawai,
+        'id_hewan' => $request->id_hewan,
+        'status_transaksi_produk' => $request->status_transaksi_produk,
+        'total_transaksi_produk' => $sub - $request->diskon_produk,
+        'diskon_produk' => $request->diskon_produk];
+        if($this->db->where('id_transaksi_produk',$id)->update($this->table, $updateData)){
             return ['msg'=>'Data Berhasil Di Ubah','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
     }
-    public function delete($time,$id){
-        $delet=[
-            'delete_at_produk'=>$time
-        ];
-        if($this->db->where('id_produk',$id)->update($this->table, $delet)){
+    public function delete($id){
+        if($this->db->where('id_transaksi_produk',$id)->delete($this->table)){
             return ['msg'=>'Data Berhasil Di Hapus','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
