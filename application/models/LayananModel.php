@@ -40,8 +40,8 @@ class LayananModel extends CI_Model{
                     ->from('LAYANAN')
                     ->join('UKURAN','LAYANAN.ID_UKURAN = UKURAN.ID_UKURAN')
                     ->join('JENIS_HEWAN','LAYANAN.ID_JENISHEWAN = JENIS_HEWAN.ID_JENISHEWAN')
-                    ->join('PEGAWAI','LAYANAN.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI')
-                    ->where('delete_at_layanan','0000-00-00 00:00:00');
+                    ->join('PEGAWAI','LAYANAN.ID_PEGAWAI = PEGAWAI.ID_PEGAWAI');
+                    // ->where('delete_at_layanan','0000-00-00 00:00:00');
             return $this->db->get()->result();
         }else{
             $this->db->select('LAYANAN.ID_LAYANAN,UKURAN.UKURAN,JENIS_HEWAN.JENISHEWAN,LAYANAN.NAMA_LAYANAN,LAYANAN.HARGA_LAYANAN,PEGAWAI.NAMA_PEGAWAI,LAYANAN.CREATE_AT_LAYANAN,LAYANAN.UPDATE_AT_LAYANAN,LAYANAN.DELETE_AT_LAYANAN')

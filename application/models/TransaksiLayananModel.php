@@ -44,10 +44,16 @@ class TransaksiLayananModel extends CI_Model{
                     ->where("status_layanan='0' OR progres_layanan='0'");
             return $this->db->get()->result();
         }else{
-            $this->db->select('*')
-                    ->from($this->table)
-                    ->like('id_transaksi',$id);
-            return $this->db->get()->result();
+            $this->db->select('TP.SUBTOTAL_TRANSAKSI_LAYANAN,TP.TOTAL_TRANSAKSI_LAYANAN,TP.DISKON_LAYANAN,TP.ID_PEGAWAI,TP.PEG_ID_PEGAWAI,TP.ID_HEWAN,
+            TP.PROGRES_LAYANAN,TP.STATUS_LAYANAN,CONCAT(P.NAMA_PELANGGAN,"(",H.NAMA_HEWAN,"-",JH.JENISHEWAN,")") AS NAMA_PELANGGAN,P.PHONE_PELANGGAN,PCS.NAMA_PEGAWAI,PK.NAMA_PEGAWAI AS NAMA_KASIR')
+                ->from('TRANSAKSI_LAYANAN TP')
+                ->join('PEGAWAI PCS','TP.ID_PEGAWAI = PCS.ID_PEGAWAI')
+                ->join('PEGAWAI PK','TP.PEG_ID_PEGAWAI = PK.ID_PEGAWAI')
+                ->join('HEWAN H','TP.ID_HEWAN = H.ID_HEWAN')
+                ->join('PELANGGAN P','H.ID_PELANGGAN = P.ID_PELANGGAN')
+                ->join('JENIS_HEWAN JH','H.ID_JENISHEWAN = JH.ID_JENISHEWAN')
+                ->like('TP.ID_TRANSAKSI_LAYANAN',$id);
+            return $this->db->get()->row_array();
         }
     }
     public function store($request) { 
@@ -106,8 +112,9 @@ class TransaksiLayananModel extends CI_Model{
     
     public function update($request,$id) {
         $conn = mysqli_connect('localhost', $this->db->username, $this->db->password,$this->db->database);
-        $result = mysqli_query($conn,"SELECT subtotal_transaksi_layanan FROM $this->table WHERE id_transaksi_layanan = $id");
-        $sub = mysqli_fetch_row($result);
+        // $this->db->select('SUBTOTAL_TRANSAKSI_LAYANAN'); 
+        // $result = mysqli_query($conn,"SELECT SUBTOTAL_TRANSAKSI_LAYANAN FROM $this->table WHERE id_transaksi_layanan = $id");
+        // $sub = mysqli_fetch_row($result);
         
         $updateData = [
         'id_pegawai'=>$request->id_pegawai,
@@ -115,7 +122,7 @@ class TransaksiLayananModel extends CI_Model{
         'id_hewan' => $request->id_hewan,
         'status_layanan' => $request->status_layanan,
         'progres_layanan' => $request->progres_layanan,
-        'total_transaksi_layanan' => $sub - $request->diskon_layanan,
+        'total_transaksi_layanan' => $request->subtotal_transaksi_layanan - $request->diskon_layanan,
         'diskon_layanan' => $request->diskon_layanan];
         if($this->db->where('id_transaksi_layanan',$id)->update($this->table, $updateData)){
             return ['msg'=>'Data Berhasil Di Ubah','error'=>false];

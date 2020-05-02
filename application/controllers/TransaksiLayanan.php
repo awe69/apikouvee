@@ -55,7 +55,7 @@ class TransaksiLayanan extends RestController{
                 $TransaksiLayanan->status_layanan = $this->post('status_layanan');
                 $TransaksiLayanan->progres_layanan = $this->post('progres_layanan');
                 $TransaksiLayanan->diskon_layanan = $this->post('diskon_layanan');
-                $TransaksiLayanan->total_transaksi_layanan = $this->post('total_transaksi_layanan');
+                $TransaksiLayanan->subtotal_transaksi_layanan = $this->post('subtotal_transaksi_layanan');
                 $response = $this->TransaksiLayananModel->update($TransaksiLayanan,$id_trans);
                 $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
             }

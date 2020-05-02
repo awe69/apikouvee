@@ -32,11 +32,14 @@ class DetilTransaksiLayananModel extends CI_Model{
                     ->join('LAYANAN','DETIL_TRANSAKSI_LAYANAN.ID_LAYANAN = LAYANAN.ID_LAYANAN');
             return $this->db->get()->result();
         }else{
-            $this->db->select('DETIL_TRANSAKSI_LAYANAN.ID_DETILTRANSAKSI_LAYANAN,DETIL_TRANSAKSI_LAYANAN.ID_TRANSAKSI_LAYANAN,DETIL_TRANSAKSI_LAYANAN.ID_LAYANAN,LAYANAN.NAMA_LAYANAN,DETIL_TRANSAKSI_LAYANAN.SUB_TOTAL_LAYANAN,DETIL_TRANSAKSI_LAYANAN.JUMLAH_DETIL_LAYANAN')
+            $this->db->select('DETIL_TRANSAKSI_LAYANAN.ID_DETILTRANSAKSI_LAYANAN,DETIL_TRANSAKSI_LAYANAN.ID_TRANSAKSI_LAYANAN,DETIL_TRANSAKSI_LAYANAN.ID_LAYANAN,CONCAT(LAYANAN.NAMA_LAYANAN," ",UKURAN.UKURAN," ",JENIS_HEWAN.JENISHEWAN) AS NAMA_LAYANAN,DETIL_TRANSAKSI_LAYANAN.SUB_TOTAL_LAYANAN,DETIL_TRANSAKSI_LAYANAN.JUMLAH_DETIL_LAYANAN')
                     ->from('DETIL_TRANSAKSI_LAYANAN')
                     ->join('LAYANAN','DETIL_TRANSAKSI_LAYANAN.ID_LAYANAN = LAYANAN.ID_LAYANAN')
+                    ->join('UKURAN','LAYANAN.ID_UKURAN = UKURAN.ID_UKURAN')
+                    ->join('JENIS_HEWAN','LAYANAN.ID_JENISHEWAN = JENIS_HEWAN.ID_JENISHEWAN')
                     ->like('ID_TRANSAKSI_LAYANAN',$id_trans);
             return $this->db->get()->result();
+            
         }
     }
     public function store($request) { 
@@ -109,7 +112,19 @@ class DetilTransaksiLayananModel extends CI_Model{
         return ['msg'=>'Gagal','error'=>true];
     }
     public function delete($id){
-        if($this->db->where('id_detil_transaksi',$id)->delete($this->detil)){
+        $conn = mysqli_connect('localhost', $this->db->username, $this->db->password,$this->db->database);
+        $result = mysqli_query($conn,"SELECT id_transaksi_layanan FROM $this->detil WHERE id_detiltransaksi_layanan = '$id' ");
+        $idTrans = mysqli_fetch_row($result);
+        if($this->db->where('id_detiltransaksi_layanan',$id)->delete($this->detil)){
+            //hitung subtotal detil
+            $result = mysqli_query($conn,"SELECT SUM(sub_total_layanan) FROM $this->detil WHERE id_transaksi_layanan = '$idTrans[0]' ");
+            $sub = mysqli_fetch_row($result);
+            
+            //update subtotal di transaksi 
+            mysqli_query($conn,"UPDATE $this->trans SET subtotal_transaksi_layanan = '$sub[0]' WHERE id_transaksi_layanan = '$idTrans[0]' ");
+        
+            //update total di transaksi
+            mysqli_query($conn,"UPDATE $this->trans SET total_transaksi_layanan = subtotal_transaksi_layanan - diskon_layanan WHERE id_transaksi_layanan = '$idTrans[0]' ");
             return ['msg'=>'Data Berhasil Di Hapus','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];

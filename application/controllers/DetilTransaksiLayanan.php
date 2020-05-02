@@ -16,10 +16,11 @@ class DetilTransaksiLayanan extends RestController{
     public function index_get($id_detil = null){
         $detil_layanan = $this->DetilTransaksiLayananModel->getall($id_detil);
          if($detil_layanan == null){
-             $this->response(['Message'=>'Data Tidak Ditemukan','Error'=>true],404);
+            
+            $this->response(['Message'=>'Data Tidak Ditemukan','Error'=>true],404);
          }else{
              if($id_detil==null){
-                 $this->response(['Data'=>$detil_layanan,'Error'=>false],200);
+                $this->response(['Data'=>$detil_layanan,'Error'=>false],200);
              }
              else{
                  $this->response(['Data'=>$detil_layanan,'Error'=>false],200);
