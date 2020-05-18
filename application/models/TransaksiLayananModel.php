@@ -39,13 +39,19 @@ class TransaksiLayananModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            $this->db->select('*')
-                    ->from($this->table)
-                    ->where("status_layanan='0' OR progres_layanan='0'");
+            $this->db->select('TP.SUBTOTAL_TRANSAKSI_LAYANAN,TP.TOTAL_TRANSAKSI_LAYANAN,TP.DISKON_LAYANAN,TP.ID_PEGAWAI,TP.PEG_ID_PEGAWAI,TP.ID_HEWAN,
+            TP.PROGRES_LAYANAN,TP.STATUS_LAYANAN,P.NAMA_PELANGGAN,P.PHONE_PELANGGAN,PCS.NAMA_PEGAWAI,PK.NAMA_PEGAWAI AS NAMA_KASIR,TP.ID_TRANSAKSI_LAYANAN,TP.TGL_TRANSAKSI_LAYANAN')
+                ->from('TRANSAKSI_LAYANAN TP')
+                ->join('PEGAWAI PCS','TP.ID_PEGAWAI = PCS.ID_PEGAWAI')
+                ->join('PEGAWAI PK','TP.PEG_ID_PEGAWAI = PK.ID_PEGAWAI')
+                ->join('HEWAN H','TP.ID_HEWAN = H.ID_HEWAN')
+                ->join('PELANGGAN P','H.ID_PELANGGAN = P.ID_PELANGGAN')
+                ->join('JENIS_HEWAN JH','H.ID_JENISHEWAN = JH.ID_JENISHEWAN')
+                ->where("status_layanan='0' OR progres_layanan='0'");
             return $this->db->get()->result();
         }else{
             $this->db->select('TP.SUBTOTAL_TRANSAKSI_LAYANAN,TP.TOTAL_TRANSAKSI_LAYANAN,TP.DISKON_LAYANAN,TP.ID_PEGAWAI,TP.PEG_ID_PEGAWAI,TP.ID_HEWAN,
-            TP.PROGRES_LAYANAN,TP.STATUS_LAYANAN,CONCAT(P.NAMA_PELANGGAN,"(",H.NAMA_HEWAN,"-",JH.JENISHEWAN,")") AS NAMA_PELANGGAN,P.PHONE_PELANGGAN,PCS.NAMA_PEGAWAI,PK.NAMA_PEGAWAI AS NAMA_KASIR')
+            TP.PROGRES_LAYANAN,TP.STATUS_LAYANAN,CONCAT(P.NAMA_PELANGGAN,"(",H.NAMA_HEWAN,"-",JH.JENISHEWAN,")") AS NAMA_PELANGGAN,P.PHONE_PELANGGAN,PCS.NAMA_PEGAWAI,PK.NAMA_PEGAWAI AS NAMA_KASIR,TP.ID_TRANSAKSI_LAYANAN,TP.TGL_TRANSAKSI_LAYANAN')
                 ->from('TRANSAKSI_LAYANAN TP')
                 ->join('PEGAWAI PCS','TP.ID_PEGAWAI = PCS.ID_PEGAWAI')
                 ->join('PEGAWAI PK','TP.PEG_ID_PEGAWAI = PK.ID_PEGAWAI')
