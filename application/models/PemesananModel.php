@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class PemesananModel extends CI_Model{
     private $table='PEMESANAN';
     private $table2='DETIL_PEMESANAN';
+    private $table3='PRODUK';
     
     //id_pemesanan,id_pegawai= cs, peg_id_pegawai=kasir, id_hewan,status_transaksi_produk,tgl_transaksi_produk,subtotal_transaksi_produk
     //,total_transaksi_produk,diskon_produk
@@ -24,14 +25,17 @@ class PemesananModel extends CI_Model{
     public function Rules(){return $this->rule;}
     public function getall($id){
         if($id==null){
-            $this->db->select('*')
-                    ->from($this->table)
-                    ->where('status_pemesanan',0);
+            $this->db->select('PEMESANAN.ID_PEMESANAN,PEMESANAN.ID_SUPPLIER,PEMESANAN.TANGGAL_PEMESANAN,PEMESANAN.TANGGAL_PEMESANAN,PEMESANAN.STATUS_PEMESANAN,
+                                PEMESANAN.TOTAL,SUPPLIER.NAMA_SUPPLIER')
+                    ->from('PEMESANAN')
+                    ->join('SUPPLIER','PEMESANAN.ID_SUPPLIER = SUPPLIER.ID_SUPPLIER');
             return $this->db->get()->result();
         }else{
-            $this->db->select('*')
-                    ->from($this->table)
-                    ->like('id_pemesanan',$id);
+            $this->db->select('PEMESANAN.ID_PEMESANAN,PEMESANAN.ID_SUPPLIER,PEMESANAN.TANGGAL_PEMESANAN,PEMESANAN.TANGGAL_PEMESANAN,PEMESANAN.STATUS_PEMESANAN,
+                                PEMESANAN.TOTAL,SUPPLIER.NAMA_SUPPLIER,SUPPLIER.ALAMAT_SUPPLIER,SUPPLIER.PHONE_SUPPLIER')
+                    ->from('PEMESANAN')
+                    ->join('SUPPLIER','PEMESANAN.ID_SUPPLIER = SUPPLIER.ID_SUPPLIER')
+                    ->like('ID_PEMESANAN',$id);
             return $this->db->get()->result();
         }
     }
@@ -58,7 +62,7 @@ class PemesananModel extends CI_Model{
             $idTrans = mysqli_fetch_row($result);
             // echo ' ',$idTrans[0];
             
-            $str = substr($idTrans[0],10,2);
+            $str = substr($idTrans[0],14,2);
             $no = intval($str) + 1;
             
             if($no < 10)
@@ -92,11 +96,20 @@ class PemesananModel extends CI_Model{
         'status_pemesanan'=>$request->status_pemesanan,
         'id_supplier' => $request->id_supplier];
         if($this->db->where('id_pemesanan',$id)->update($this->table, $updateData)){
-           if($request->status_pemesanan==1){
+            if($request->status_pemesanan==1){
                 //ambil id dan jumlah produk
-                $produkque = mysqli_query($conn,"SELECT ID_PRODUK FROM DETIL_PEMESANAN WHERE ID_PEMESANAN = $id");
-                $produk = mysqli_fetch_row($produkque);
-                // // echo $produk[0];
+                $produkque = mysqli_query($conn,"SELECT ID_PRODUK, JUMLAH_PESANAN FROM DETIL_PEMESANAN WHERE ID_PEMESANAN = '$id'");
+                
+                while($row = mysqli_fetch_array($produkque, MYSQLI_ASSOC))
+                {
+                   $rows[] = $row;
+                }
+
+                foreach($rows as $row){
+                    $id = $row['ID_PRODUK'];
+                    $pesan = intval($row['JUMLAH_PESANAN']);
+                    mysqli_query($conn,"UPDATE $this->table3 SET stock = stock + '$pesan' WHERE ID_PRODUK = '$id' ");
+                }
            }
             return ['msg'=>'Data Berhasil Di Ubah','error'=>false];
         }

@@ -37,7 +37,7 @@ class DetilPemesananModel extends CI_Model{
                     ->join('PRODUK','DETIL_PEMESANAN.ID_PRODUK = PRODUK.ID_PRODUK');
             return $this->db->get()->result();
         }else{
-            $this->db->select('DETIL_PEMESANAN.ID_DETIL_PEMESANAN,DETIL_PEMESANAN.ID_PEMESANAN,DETIL_PEMESANAN.ID_PRODUK, PRODUK.NAMA_PRODUK,DETIL_PEMESANAN.SUB_TOTAL_PEMESANAN,DETIL_PEMESANAN.JUMLAH_PESANAN')
+            $this->db->select('DETIL_PEMESANAN.ID_DETIL_PEMESANAN,DETIL_PEMESANAN.ID_PEMESANAN,DETIL_PEMESANAN.ID_PRODUK, PRODUK.NAMA_PRODUK,PRODUK.SATUAN_PRODUK,DETIL_PEMESANAN.SUB_TOTAL_PEMESANAN,DETIL_PEMESANAN.JUMLAH_PESANAN')
                     ->from('DETIL_PEMESANAN')
                     ->join('PRODUK','DETIL_PEMESANAN.ID_PRODUK = PRODUK.ID_PRODUK')
                     ->like('ID_PEMESANAN',$id_trans);
@@ -128,7 +128,15 @@ class DetilPemesananModel extends CI_Model{
         return ['msg'=>'Gagal','error'=>true];
     }
     public function delete($id){
-        if($this->db->where('id_detil_transaksi',$id)->delete($this->detil)){
+        $conn = mysqli_connect('localhost', $this->db->username, $this->db->password,$this->db->database);
+        $result = mysqli_query($conn,"SELECT id_pemesanan FROM $this->detil WHERE id_detil_pemesanan = '$id' ");
+        $idTrans = mysqli_fetch_row($result);
+        if($this->db->where('id_detil_pemesanan',$id)->delete($this->detil)){
+            $result = mysqli_query($conn,"SELECT SUM(sub_total_pemesanan) FROM $this->detil WHERE id_pemesanan = '$idTrans[0]' ");
+            $sub = mysqli_fetch_row($result);
+            
+            //update subtotal di transaksi 
+            mysqli_query($conn,"UPDATE $this->trans SET total = '$sub[0]' WHERE id_pemesanan = '$idTrans[0]' ");
             return ['msg'=>'Data Berhasil Di Hapus','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];

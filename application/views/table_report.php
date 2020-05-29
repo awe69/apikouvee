@@ -17,10 +17,9 @@
 	.column {
 		flex: 50%;
 	}
-	table{
-      border-collapse: collapse;
-      font-family: arial;
-    }
+	table, th, td {
+  		border: 1px solid black;
+	}
 </style>
 <body>
 <div class='center'> 
@@ -57,9 +56,9 @@
 		<tr>
 			<td  style='text-align:center'><?php echo $no ?></td>
 			<td  style='text-align:center' ><?php echo $list->NAMA_LAYANAN ?></td>
-			<td  style='text-align:center'><?php echo $list->SUB_TOTAL_LAYANAN ?></td>
+			<td  style='text-align:center'><?php echo "Rp " . number_format($list->SUB_TOTAL_LAYANAN,2,',','.') ?></td>
 			<td  style='text-align:center'><?php echo $list->JUMLAH_DETIL_LAYANAN ?></td>
-			<td  style='text-align:center'><?php echo $list->SUB_TOTAL_LAYANAN ?></td>
+			<td  style='text-align:center'><?php echo "Rp " . number_format($list->SUB_TOTAL_LAYANAN,2,',','.') ?></td>
     	</tr>
     	<?php $no++; ?>
 	  	<?php endforeach; ?>
@@ -68,9 +67,9 @@
 	<hr>
 	<div style='display:flex;'>
 		<div class='column'>
-			<p>Sub Total&ensp;:<?php echo $layanan['SUBTOTAL_TRANSAKSI_LAYANAN'] ?></p>
-			<p>Diskon&ensp;:<?php echo $layanan['DISKON_LAYANAN'] ?></p>
-			<p>TOTAL&ensp;:<?php echo $layanan['TOTAL_TRANSAKSI_LAYANAN'] ?></p>
+			<p>Sub Total&ensp;:<?php echo "Rp " . number_format($layanan['SUBTOTAL_TRANSAKSI_LAYANAN'],2,',','.') ?></p>
+			<p>Diskon&ensp;:<?php echo "Rp " . number_format($layanan['DISKON_LAYANAN'],2,',','.') ?></p>
+			<p>TOTAL&ensp;:<?php echo "Rp " . number_format($layanan['TOTAL_TRANSAKSI_LAYANAN'],2,',','.') ?></p>
 		</div>
 	</div>
 	
