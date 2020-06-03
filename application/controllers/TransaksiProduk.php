@@ -33,31 +33,29 @@ class TransaksiProduk extends RestController{
         $rule = $this->TransaksiProdukModel->Rules();
         $validation->set_rules($rule);
         
-        if($id_trans==null){
-            $TransaksiProduk = new dataTransaksiProduk();
-            $TransaksiProduk->id_pegawai = $this->post('id_pegawai');
-            $TransaksiProduk->peg_id_pegawai = $this->post('peg_id_pegawai');
-            $TransaksiProduk->id_hewan = $this->post('id_hewan');
-            $TransaksiProduk->status_transaksi_produk = 0;
-            $response = $this->TransaksiProdukModel->store($TransaksiProduk);
-            $this->response(['Message'=>$response['msg'],'Error'=>$response['error'],'Data'=>$response['data']],200);
-        }
-        else{
-            if (!$validation->run()) {
+        
+        if (!$validation->run()) {
 			return $this->returnData($this->form_validation->error_array(), true,400);
             }else{
                 $TransaksiProduk = new dataTransaksiProduk();
                 $TransaksiProduk->id_pegawai = $this->post('id_pegawai');
                 $TransaksiProduk->peg_id_pegawai = $this->post('peg_id_pegawai');
                 $TransaksiProduk->id_hewan = $this->post('id_hewan');
-                $TransaksiProduk->status_transaksi_produk = $this->post('status_transaksi_produk');
-                $TransaksiProduk->subtotal_transaksi_produk = $this->post('subtotal_transaksi_produk');
-                $TransaksiProduk->total_transaksi_produk = $this->post('total_transaksi_produk');
-                $TransaksiProduk->diskon_produk = $this->post('diskon_produk');
-                $response = $this->TransaksiProdukModel->update($TransaksiProduk,$id_trans);
+                $response = $this->TransaksiProdukModel->store($TransaksiProduk);
                 $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
             }
-        }
+    }
+        
+    
+    public function index_put($id_trans){
+        $TransaksiProduk = new dataTransaksiProduk();
+        $TransaksiProduk->id_pegawai = $this->put('id_pegawai');
+        $TransaksiProduk->peg_id_pegawai = $this->put('peg_id_pegawai');
+        $TransaksiProduk->id_hewan = $this->put('id_hewan');
+        $TransaksiProduk->diskon_produk = $this->put('diskon_produk');
+        $TransaksiProduk->status_transaksi_produk = $this->put('status_transaksi_produk');
+        $response = $this->TransaksiProdukModel->update($TransaksiProduk,$id_trans);
+        $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
     }
     
     public function index_delete($id_trans){

@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class TransaksiLayananModel extends CI_Model{
     private $table='TRANSAKSI_LAYANAN';
     private $table2='DETIL_TRANSAKSI_LAYANAN';
+    private $table3='PELANGGAN';
+    private $table4='HEWAN';
     
     //id_transaksi_layanan,id_pegawai= cs, peg_id_pegawai=kasir, id_hewan,status_transaksi_layanan,tgl_transaksi_layanan,subtotal_transaksi_layanan
     //,total_transaksi_layanan,diskon_layanan
@@ -131,6 +133,21 @@ class TransaksiLayananModel extends CI_Model{
         'total_transaksi_layanan' => $request->subtotal_transaksi_layanan - $request->diskon_layanan,
         'diskon_layanan' => $request->diskon_layanan];
         if($this->db->where('id_transaksi_layanan',$id)->update($this->table, $updateData)){
+            if($request->progres_layanan == 1){
+                
+                $result = mysqli_query($conn,"SELECT id_pelanggan  FROM $this->table4 WHERE id_hewan  = '$request->id_hewan' ");
+                $pelanggan = mysqli_fetch_row($result);
+                
+                $result = mysqli_query($conn,"SELECT nama_pelanggan  FROM $this->table3 WHERE id_pelanggan  = '$pelanggan[0]' ");
+                $nama = mysqli_fetch_row($result);
+                
+                $result = mysqli_query($conn,"SELECT phone_pelanggan  FROM $this->table3 WHERE id_pelanggan  = '$pelanggan[0]' ");
+                $phone = mysqli_fetch_row($result);
+                echo $nama[0].$phone[0];
+                
+                $resp = $this->SendAPI_SMS($nama[0],$phone[0]);
+                
+            }
             return ['msg'=>'Data Berhasil Di Ubah','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
@@ -140,6 +157,24 @@ class TransaksiLayananModel extends CI_Model{
             return ['msg'=>'Data Berhasil Di Hapus','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
+    }
+
+    function SendAPI_SMS($nama,$phone){
+        $email_api    = urlencode("kasih69ibu@gmail.com");
+        $passkey_api  = urlencode("Hm123123");
+        $no_hp_tujuan = urlencode("$phone");
+        $isi_pesan    = urlencode("Hai, ".$nama.". Layanan yang telah kamu beli di Kouvee Pet Shop telah selesai!");
+        
+        $url          = "https://reguler.medansms.co.id/sms_api.php?action=kirim_sms&email=".$email_api."&passkey=".$passkey_api."&no_tujuan=".$no_hp_tujuan."&pesan=".$isi_pesan."&json=1";
+    	$ch = curl_init();
+    	curl_setopt($ch, CURLOPT_URL, $url);
+    	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    	$response  = curl_exec($ch);
+    	curl_close($ch);
+    	return $response;
     }
 }
 ?>

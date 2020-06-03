@@ -45,13 +45,14 @@ class DetilTransaksiProduk extends RestController{
                 $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
             }
         }
-        else{
-                $DetilTransaksiProduk = new dataDetilTransaksiProduk();
-                $DetilTransaksiProduk->id_produk = $this->post('id_produk');
-                $DetilTransaksiProduk->jumlah_produk = $this->post('jumlah_produk');
-                $response = $this->DetilTransaksiProdukModel->update($DetilTransaksiProduk,$id_detil);
-                $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
-        }
+    }
+    
+    public function index_put($id_detil){
+        $DetilTransaksiProduk = new dataDetilTransaksiProduk();
+        $DetilTransaksiProduk->id_produk = $this->put('id_produk');
+        $DetilTransaksiProduk->jumlah_produk = $this->put('jumlah_produk');
+        $response = $this->DetilTransaksiProdukModel->update($DetilTransaksiProduk,$id_detil);
+        $this->response(['Message'=>$response['msg'],'Error'=>$response['error']],200);
     }
     
     public function index_delete($id_detil){
